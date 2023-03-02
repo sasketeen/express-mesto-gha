@@ -25,9 +25,15 @@ module.exports.postUser = (req, res, next) => {
 
 /** middleware проверки существования пользователя */
 module.exports.doesUserExist = (req, res, next) => {
+  console.log(req.params.userId);
   User.findById(req.params.userId)
-    .then(() => next())
-    .catch(() => next(new NotFound('Пользователь по указанному id не найден')));
+    .then((user) => {
+      if (user) {
+        next();
+      }
+      next(new NotFound('Пользователь по указанному id не найден'));
+    })
+    .catch(() => next(new BadRequest('Ошибка сервера')));
 };
 
 /** получение пользователя по id */
