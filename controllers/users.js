@@ -1,7 +1,7 @@
 const User = require('../models/user');
-const BadRequest = require('./errors/BadRequest');
-const InternalServerError = require('./errors/InternalServerError');
-const NotFound = require('./errors/NotFound');
+const BadRequest = require('../errors/BadRequest');
+const InternalServerError = require('../errors/InternalServerError');
+const NotFound = require('../errors/NotFound');
 
 /** получение массива всех пользователей */
 module.exports.getUsers = (req, res, next) => {

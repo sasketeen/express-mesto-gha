@@ -25,11 +25,15 @@ app.use((req, res, next) => {
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
+app.use('/cards', cardRouter);
+app.use('/*', (req, res) => {
+  res.status(404).send({ message: 'Как ты тут оказался?' });
+});
 
 // https://expressjs.com/ru/guide/error-handling.html
 app.use((err, req, res, next) => {
-  // console.error(err.stack);
-  res.status(err.statusCode).send(`ошибка ${err.statusCode}: ${err.message}`);
+  console.error(err.stack);
+  res.status(err.statusCode).send({ message: `ошибка ${err.statusCode}: ${err.message}` });
   next();
 });
 
