@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const process = require('process');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
 
 // переданное значение порта (по дефолту 3000)
 const { PORT = 3000 } = process.env;
@@ -22,6 +24,13 @@ app.use((req, res, next) => {
 });
 
 app.use('/users', userRouter);
+app.use('/cards', cardRouter);
+
+// https://expressjs.com/ru/guide/error-handling.html
+app.use((err, req, res) => {
+  console.error(err.stack);
+  res.status(err.statusCode).send(`ошибка ${err.statusCode}: ${err.message}`);
+});
 
 app.listen(PORT, () => {
   console.log(`Порт ${PORT}`);
