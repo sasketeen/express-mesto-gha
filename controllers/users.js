@@ -25,15 +25,15 @@ module.exports.postUser = (req, res, next) => {
 
 /** middleware проверки существования пользователя */
 module.exports.doesUserExist = (req, res, next) => {
-  console.log(req.params.userId);
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
         next();
+        return;
       }
       next(new NotFound('Пользователь по указанному id не найден'));
     })
-    .catch(() => next(new BadRequest('Ошибка сервера')));
+    .catch(() => next(new BadRequest('Неверные параметры запроса')));
 };
 
 /** получение пользователя по id */
@@ -51,6 +51,7 @@ module.exports.editUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
+        return;
       }
       next(new InternalServerError());
     });

@@ -28,14 +28,14 @@ module.exports.postCard = (req, res, next) => {
 /** middleware проверки существования карточки */
 module.exports.doesCardExist = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .then(() => next())
-    .catch(() => next(new NotFound('Карточка с указанным id не найдена')));
-};
-
-module.exports.doesCardExist = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    .then(() => next())
-    .catch(() => next(new NotFound('Карточка с указанным id не найдена')));
+    .then((card) => {
+      if (card) {
+        next();
+        return;
+      }
+      next(new NotFound('Карточка с указанным id не найдена'));
+    })
+    .catch(() => next(new BadRequest('Неверные параметры запроса')));
 };
 
 /** удаление карточки */

@@ -5,9 +5,9 @@ const {
 
 router.get('/', getUsers);
 router.post('/', postUser);
-router.use('/:userId', doesUserExist);
-router.get('/:userId', getUserInfo);
 router.patch('/me', editUserInfo);
 router.patch('/me/avatar', editAvatar);
+router.use('/:userId', doesUserExist);
+router.get('/:userId', getUserInfo);
 
 module.exports = router;
