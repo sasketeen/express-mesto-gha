@@ -1,7 +1,7 @@
 const User = require('../models/user');
-const BadRequest = require('./errors/BadRequest');
-const InternalServerError = require('./errors/InternalServerError');
-const NotFound = require('./errors/NotFound');
+const BadRequest = require('../errors/BadRequest');
+const InternalServerError = require('../errors/InternalServerError');
+const NotFound = require('../errors/NotFound');
 
 /** получение массива всех пользователей */
 module.exports.getUsers = (req, res, next) => {
@@ -18,7 +18,6 @@ module.exports.postUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
-        return;
       }
       next(new InternalServerError());
     });
@@ -27,8 +26,14 @@ module.exports.postUser = (req, res, next) => {
 /** middleware проверки существования пользователя */
 module.exports.doesUserExist = (req, res, next) => {
   User.findById(req.params.userId)
-    .then(() => next())
-    .catch(() => next(new NotFound('Пользователь по указанному id не найден')));
+    .then((user) => {
+      if (user) {
+        next();
+        return;
+      }
+      next(new NotFound('Пользователь по указанному id не найден'));
+    })
+    .catch(() => next(new BadRequest('Неверные параметры запроса')));
 };
 
 /** получение пользователя по id */
