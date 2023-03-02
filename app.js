@@ -27,9 +27,10 @@ app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
 // https://expressjs.com/ru/guide/error-handling.html
-app.use((err, req, res) => {
-  console.error(err.stack);
+app.use((err, req, res, next) => {
+  // console.error(err.stack);
   res.status(err.statusCode).send(`ошибка ${err.statusCode}: ${err.message}`);
+  next();
 });
 
 app.listen(PORT, () => {

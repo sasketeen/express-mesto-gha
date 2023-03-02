@@ -18,7 +18,6 @@ module.exports.postUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
-        return;
       }
       next(new InternalServerError());
     });
@@ -46,7 +45,6 @@ module.exports.editUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
-        return;
       }
       next(new InternalServerError());
     });
