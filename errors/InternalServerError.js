@@ -3,7 +3,7 @@ class InternalServerError extends Error {
     super(message);
     this.name = 'InternalServerError';
     this.statusCode = 500;
-    this.message = 'Ошибка сервера или пространственно-временного континуума';
+    this.message = 'На сервере произошла ошибка';
   }
 }
 
