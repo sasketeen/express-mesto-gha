@@ -2,7 +2,7 @@
 
 # Проект Mesto фронтенд + бэкенд
 
-##[https://github.com/sasketeen/express-mesto-gha](Ссылка на репозиторий)
+## [Ссылка на репозиторий](https://github.com/sasketeen/express-mesto-gha)
 ## Директории
 
 `/routes` — папка с файлами роутера  
