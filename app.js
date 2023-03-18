@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const process = require('process');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/users');
@@ -23,10 +24,10 @@ app.use('/cards', cardRouter);
 app.use('/*', (req, res) => {
   res.status(404).send({ message: 'Как ты тут оказался?' });
 });
+app.use(errors());
 
 // https://expressjs.com/ru/guide/error-handling.html
 app.use((err, req, res, next) => {
-  // console.error(err.stack);
   res.status(err.statusCode).send({ message: `ошибка ${err.statusCode}: ${err.message}` });
   next();
 });
