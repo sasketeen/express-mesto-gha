@@ -4,6 +4,7 @@ const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const InternalServerError = require('../errors/InternalServerError');
 const NotFound = require('../errors/NotFound');
+
 // const Unauthorized = require('../errors/Unauthorized');
 
 /** получение массива всех пользователей */
@@ -24,9 +25,7 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      res.send({
-        name, about, avatar, email, password: user.password, _id: user._id,
-      });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -53,17 +52,19 @@ module.exports.login = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-/** middleware проверки существования пользователя */
-module.exports.doesUserExist = (req, res, next) => {
-  User.findById(req.params.userId)
+/** получение текущего пользователя */
+module.exports.getMe = (req, res, next) => {
+  const userId = req.user._id;
+  User
+    .findById(userId)
     .then((user) => {
       if (user) {
-        next();
+        res.send({ user });
         return;
       }
       next(new NotFound('Пользователь по указанному id не найден'));
     })
-    .catch(() => next(new BadRequest('Неверные параметры запроса')));
+    .catch(() => next(new InternalServerError()));
 };
 
 /** получение пользователя по id */

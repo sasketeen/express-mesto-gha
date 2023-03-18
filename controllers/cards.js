@@ -2,6 +2,7 @@ const Card = require('../models/card');
 const BadRequest = require('../errors/BadRequest');
 const InternalServerError = require('../errors/InternalServerError');
 const NotFound = require('../errors/NotFound');
+const Forbidden = require('../errors/Forbidden');
 
 /** получение карточек */
 module.exports.getCards = (req, res, next) => {
@@ -13,8 +14,7 @@ module.exports.getCards = (req, res, next) => {
 /** создание карточки */
 module.exports.postCard = (req, res, next) => {
   const { name, link } = req.body;
-  const { _id } = req.user;
-  Card.create({ name, link, owner: _id })
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -30,6 +30,10 @@ module.exports.doesCardExist = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (card) {
+        // https://qna.habr.com/q/1153588
+        req.locals = {
+          card,
+        };
         next();
         return;
       }
@@ -40,10 +44,15 @@ module.exports.doesCardExist = (req, res, next) => {
 
 /** удаление карточки */
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => res.send(card))
+  const { card } = req.locals;
+  if (`${card.owner}` !== req.user._id) next(new Forbidden());
+  card
+    .deleteOne()
+    .then(() => res.send({ data: card }))
     .catch(() => next(new InternalServerError()));
 };
+
+// TODO переписать контролеры с использованием req.locals
 
 /** добавления лайка карточке */
 module.exports.likeCard = (req, res, next) => {
