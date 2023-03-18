@@ -20,13 +20,14 @@ router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     avatar: Joi
       .string()
-      .required(),
+      .required()
+      .uri(({ scheme: ['http', 'https'] })),
   }),
 }), editAvatar);
 
 router.use('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().required(),
+    userId: Joi.string().required().length(24),
   }),
 }), doesUserExist);
 

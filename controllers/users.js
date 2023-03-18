@@ -4,6 +4,7 @@ const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const InternalServerError = require('../errors/InternalServerError');
 const NotFound = require('../errors/NotFound');
+const ConflictingRequest = require('../errors/ConflictingRequest');
 
 // const Unauthorized = require('../errors/Unauthorized');
 
@@ -25,7 +26,9 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      res.send(user);
+      res.send({
+        name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -33,7 +36,7 @@ module.exports.createUser = (req, res, next) => {
         return;
       }
       if (err.code === 11000) {
-        next(new BadRequest('Такой пользователь уже существует'));
+        next(new ConflictingRequest('Такой пользователь уже существует'));
       }
       next(new InternalServerError());
     });
