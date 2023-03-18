@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const InternalServerError = require('../errors/InternalServerError');
@@ -38,27 +39,17 @@ module.exports.postUser = (req, res, next) => {
 };
 
 /** авторизация */
-// module.exports.login = (req, res, next) => {
-//   const { email, password } = req.body;
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
 
-//   bcrypt.hash(password, 10)
-//     .then((hash) => User.create({
-//       name, about, avatar, email, password: hash,
-//     }))
-//     .then((user) => res.send({
-//       name, about, avatar, email, _id: user._id,
-//     }))
-//     .catch((err) => {
-//       if (err.name === 'ValidationError') {
-//         next(new BadRequest('Переданы некорректные данные при создании пользователя'));
-//         return;
-//       }
-//       if (err.code === 11000) {
-//         next(new BadRequest('Такой пользователь уже существует'));
-//       }
-//       next(new InternalServerError());
-//     });
-// };
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // После ревью сгенирировать новый ключ и перенести его в .ENV
+      const token = jwt.sign({ _id: user._id }, '0828c9036904226796ec7b3d4bfd79eafe5e285841b3a080b5380d808490be0a', { expiresIn: '1d' });
+      res.send({ token });
+    })
+    .catch((err) => next(err));
+};
 
 /** middleware проверки существования пользователя */
 module.exports.doesUserExist = (req, res, next) => {
