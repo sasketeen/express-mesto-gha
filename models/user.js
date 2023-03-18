@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
         validator: isEmail,
       },
     },
+    password: {
+      type: String,
+      required: true,
+    },
   },
   {
     versionKey: false, // https://mongoosejs.com/docs/guide.html#versionKey

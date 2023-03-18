@@ -14,7 +14,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 /** создание нового пользователя */
-module.exports.postUser = (req, res, next) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -23,9 +23,11 @@ module.exports.postUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({
-      name, about, avatar, email, _id: user._id,
-    }))
+    .then((user) => {
+      res.send({
+        name, about, avatar, email, password: user.password, _id: user._id,
+      });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при создании пользователя'));
@@ -44,7 +46,7 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // После ревью сгенирировать новый ключ и перенести его в .ENV
+      // После ревью сгенерировать новый ключ и перенести его в .ENV
       const token = jwt.sign({ _id: user._id }, '0828c9036904226796ec7b3d4bfd79eafe5e285841b3a080b5380d808490be0a', { expiresIn: '1d' });
       res.send({ token });
     })
