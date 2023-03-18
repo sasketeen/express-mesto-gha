@@ -1,7 +1,9 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const InternalServerError = require('../errors/InternalServerError');
 const NotFound = require('../errors/NotFound');
+// const Unauthorized = require('../errors/Unauthorized');
 
 /** получение массива всех пользователей */
 module.exports.getUsers = (req, res, next) => {
@@ -12,16 +14,51 @@ module.exports.getUsers = (req, res, next) => {
 
 /** создание нового пользователя */
 module.exports.postUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.send(user))
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((user) => res.send({
+      name, about, avatar, email, _id: user._id,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные при создании пользователя'));
+        return;
+      }
+      if (err.code === 11000) {
+        next(new BadRequest('Такой пользователь уже существует'));
       }
       next(new InternalServerError());
     });
 };
+
+/** авторизация */
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   bcrypt.hash(password, 10)
+//     .then((hash) => User.create({
+//       name, about, avatar, email, password: hash,
+//     }))
+//     .then((user) => res.send({
+//       name, about, avatar, email, _id: user._id,
+//     }))
+//     .catch((err) => {
+//       if (err.name === 'ValidationError') {
+//         next(new BadRequest('Переданы некорректные данные при создании пользователя'));
+//         return;
+//       }
+//       if (err.code === 11000) {
+//         next(new BadRequest('Такой пользователь уже существует'));
+//       }
+//       next(new InternalServerError());
+//     });
+// };
 
 /** middleware проверки существования пользователя */
 module.exports.doesUserExist = (req, res, next) => {

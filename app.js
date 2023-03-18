@@ -32,7 +32,7 @@ app.use('/*', (req, res) => {
 
 // https://expressjs.com/ru/guide/error-handling.html
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  // console.error(err.stack);
   res.status(err.statusCode).send({ message: `ошибка ${err.statusCode}: ${err.message}` });
   next();
 });
