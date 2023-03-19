@@ -27,7 +27,7 @@ router.patch('/me/avatar', celebrate({
 
 router.use('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().required().hex(),
+    userId: Joi.string().required().length(24).hex(),
   }),
 }), doesUserExist);
 
