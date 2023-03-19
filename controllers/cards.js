@@ -39,13 +39,16 @@ module.exports.doesCardExist = (req, res, next) => {
       }
       next(new NotFound('Карточка с указанным id не найдена'));
     })
-    .catch(() => next(new BadRequest('Неверные параметры запроса')));
+    .catch(() => next(new InternalServerError()));
 };
 
 /** удаление карточки */
 module.exports.deleteCard = (req, res, next) => {
   const { card } = req.locals;
-  if (`${card.owner}` !== req.user._id) next(new Forbidden());
+  if (`${card.owner}` !== req.user._id) {
+    next(new Forbidden());
+    return;
+  }
   card
     .deleteOne()
     .then(() => res.send({ data: card }))

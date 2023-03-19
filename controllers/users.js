@@ -37,6 +37,7 @@ module.exports.createUser = (req, res, next) => {
       }
       if (err.code === 11000) {
         next(new ConflictingRequest('Такой пользователь уже существует'));
+        return;
       }
       next(new InternalServerError());
     });
@@ -94,7 +95,7 @@ module.exports.editUserInfo = (req, res, next) => {
 /**  обновление аватара */
 module.exports.editAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {

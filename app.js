@@ -7,6 +7,7 @@ const auth = require('./middlewares/auth');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
+const NotFound = require('./errors/NotFound');
 
 // переданное значение порта (по дефолту 3000)
 const { PORT = 3000, LOCALHOST = 'mongodb://localhost:27017/mestodb' } = process.env;
@@ -21,8 +22,8 @@ app.use('/', authRouter);
 app.use(auth);
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
-app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Как ты тут оказался?' });
+app.use('/*', (req, res, next) => {
+  next(new NotFound('Как ты тут оказался?'));
 });
 app.use(errors());
 
